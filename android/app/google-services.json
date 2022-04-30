@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "483778804548",
+    "project_id": "uncleb-4c9a9",
+    "storage_bucket": "uncleb-4c9a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483778804548:android:103a47df1e5ff85ac27511",
+        "android_client_info": {
+          "package_name": "com.meditationsounds.uncleb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "483778804548-2f6riudntd1tgjo9m5fauovdfss7qmlo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm7x5qVlsHSb-JJV5eRjwo4iB73XhAUw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "483778804548-2f6riudntd1tgjo9m5fauovdfss7qmlo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
