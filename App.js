@@ -47,9 +47,12 @@ import Breathing from './components/Breathing';
 import SetLang from './components/SetLang';
 
 import Login from './components/Auth/login';
+import Register from './components/Auth/Register';
+import getName from './components/Auth/getName';
 
 import {store} from './components/ReduxStates/Store';
 import {Provider} from 'react-redux';
+import AllPagesHeader from './components/Profile/AllPagesHeader';
 
 // import TrackPlayer from 'react-native-track-player';
 
@@ -194,6 +197,7 @@ export default class App extends Component {
   render(props) {
     return (
       <Provider store={store}>
+        <AllPagesHeader />
         <Router
           {...this.props}
           navigationBarStyle={styles.navBar}
@@ -273,14 +277,16 @@ export default class App extends Component {
                 hideNavBar
               />
             </Scene>
-            <Scene
-              key="Splash"
-              component={Splash}
-              title=" "
-              initial={true}
-              hideNavBar
-            />
+            <Scene key="Splash" component={Splash} title=" " hideNavBar />
             <Scene key="Login" component={Login} title=" " hideNavBar />
+            <Scene key="Register" component={Register} title=" " hideNavBar />
+            <Scene
+              key="getName"
+              component={getName}
+              title=" "
+              hideNavBar
+              initial={true}
+            />
             <Scene
               key="SetLang"
               component={SetLang}

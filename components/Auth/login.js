@@ -18,7 +18,8 @@ export default class LoginOTP extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      verifyCode: '',
+      username: '',
+      password: '',
       phoneOrEmail: this.props.passedPhoneOrEmail,
       timer: 60,
       timerText: '(60 s)',
@@ -29,48 +30,9 @@ export default class LoginOTP extends Component {
       message: '',
       displayMessage: 'none',
       displayErrMessage: 'none',
-      UserName: null,
-      Password: null,
       Mobile: null,
       token: '',
     };
-  }
-
-  componentDidMount() {
-    //this.timerInterval();
-    this.requestOtp();
-  }
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-  timerInterval() {
-    this.interval = setInterval(() => {
-      this.setState({
-        timer: this.state.timer - 1,
-        timerText: '(' + (this.state.timer - 1) + ' s)',
-      });
-      if (this.state.timer == 0) {
-        clearInterval(this.interval);
-        this.setState({
-          resendButtonDisable: false,
-          timerText: '',
-          resendOpacity: 1,
-        });
-      }
-    }, 1000);
-  }
-
-  resendCode() {
-    clearInterval(this.interval);
-    this.setState({
-      resendButtonDisable: true,
-      resendOpacity: 0.5,
-      timer: 60,
-      timerText: '(60 s)',
-      loading: false,
-    });
-    // when request => ok
-    this.timerInterval();
   }
 
   storeTokenData = async (TokenValue) => {
@@ -85,18 +47,9 @@ export default class LoginOTP extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          {/* <Text style={styles.signupText}>Registering</Text> */}
           <Text style={styles.header}>
-            {`Enter the Code that we've send you`}
+            {`Enter your Username and Password`}
           </Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <Input
-            style={{width: '100%', height: 50, backgroundColor: '#ccc'}}
-            value={this.state.verifyCode}
-            onCodeChanged={(verifyCode) => {
-              this.setState({verifyCode});
-            }}></Input>
         </View>
         <Text
           style={{
@@ -120,22 +73,48 @@ export default class LoginOTP extends Component {
           }}>
           {this.state.message}
         </Text>
+        <TextInput
+          placeholder={'Username'}
+          style={styles.input}
+          value={this.state.username}
+          onChangeText={(username) => {
+            this.setState({username});
+          }}
+        />
+        <TextInput
+          secureTextEntry={true}
+          placeholder={'Password'}
+          style={styles.input}
+          value={this.state.password}
+          onChangeText={(password) => {
+            this.setState({password});
+          }}
+        />
         <View style={styles.btnRow}>
           <TouchableOpacity
             style={styles.btn}
             onPress={() => {
-              this.setState({
-                resendButtonDisable: true,
-                resendOpacity: 1,
-                timerText: '',
-                loading: true,
-                btnDisable: true,
-                message: '',
-                displayMessage: 'none',
-              });
-              this.otpVerify();
+              if (!this.state.username) {
+                this.setState({
+                  displayErrMessage: 'flex',
+                  message: 'Username is empty!',
+                });
+              } else if (!this.state.password) {
+                this.setState({
+                  displayErrMessage: 'flex',
+                  message: 'Enter password please!',
+                });
+              } else {
+                this.requestOtp();
+                this.setState({
+                  loading: true,
+                  btnDisable: true,
+                  message: '',
+                  displayMessage: 'none',
+                });
+              }
             }}>
-            <Text style={styles.btntext}>Verify</Text>
+            <Text style={styles.btntext}>Submit</Text>
             <Spinner
               isVisible={this.state.loading}
               color="#ccc"
@@ -144,29 +123,6 @@ export default class LoginOTP extends Component {
             />
           </TouchableOpacity>
         </View>
-        <Text style={styles.alreadyText}>{`\nDidn't recieve code?\n`}</Text>
-
-        <TouchableOpacity
-          disabled={this.state.resendButtonDisable}
-          style={{
-            opacity: this.state.resendOpacity,
-            marginTop: 0,
-          }}
-          onPress={() => {
-            this.resendCode();
-            this.requestOtp();
-            this.setState({displayMessage: 'none', displayErrMessage: 'none'});
-          }}>
-          <Text
-            style={[
-              styles.resendText,
-              {
-                display: this.state.resendloading ? 'none' : 'flex',
-              },
-            ]}>
-            Resend Code {this.state.timerText}
-          </Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -175,14 +131,11 @@ export default class LoginOTP extends Component {
     this.setState({loading: true});
 
     axios
-      .post('https://raygansms.com/CheckSendCode.ashx', {
-        UserName: 'behnam',
-        Password: '12345678',
-        Mobile: '09353226202',
-        Code: 'GooD MooD Meditation',
+      .post('https://uncleb.ir/wp-json/jwt-auth/v1/token', {
+        username: this.state.username,
+        password: this.state.password,
       })
       .then((response) => {
-        // alert(response.status);
         console.log(response);
 
         if (!response.hasError) {
@@ -192,11 +145,9 @@ export default class LoginOTP extends Component {
             btnDisable: false,
             loading: false,
           });
-          //alert(response);
-          //Actions.SetTimer();
         } else if (response.hasError) {
           this.setState({
-            message: response.data.message[0].text,
+            message: response.data.data.message[0].text,
             loading: false,
             btnDisable: false,
             displayMessage: 'none',
@@ -206,11 +157,12 @@ export default class LoginOTP extends Component {
       })
       .catch((error) => {
         console.log(error.response);
-        console.log(error);
-        if (error.response.status == 422) {
-          console.log(error.response);
+
+        if (error) {
+          console.log(error.data);
           this.setState({
-            message: error.response.data.message,
+            message:
+              'Somthing went wrong. check your username and password or network connection!',
             loading: false,
             btnDisable: false,
             displayMessage: 'none',
@@ -224,15 +176,17 @@ export default class LoginOTP extends Component {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: '5%',
-    justifyContent: 'center',
+    width: '90%',
+    height: '100%',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
-    width: '95%',
+    backgroundColor: '#fff',
+    marginTop: '10%',
   },
   headerContainer: {
     alignItems: 'flex-start',
-    width: '95%',
+    width: '100%',
   },
   header: {
     color: '#000',
@@ -247,25 +201,19 @@ const styles = StyleSheet.create({
     color: '#000',
     marginBottom: 20,
   },
-  inputContainer: {
-    width: '100%',
-    alignSelf: 'center',
-    marginBottom: 40,
-  },
+
   input: {
-    backgroundColor: '#e6e6e6',
-    width: '92%',
-    height: 50,
+    backgroundColor: '#e6e6ff',
+    width: '100%',
     margin: 10,
     borderRadius: 10,
     paddingLeft: 10,
-    height: 50,
   },
   btnRow: {
     flexDirection: 'row',
   },
   btn: {
-    backgroundColor: '#000',
+    backgroundColor: '#a64dff',
     paddingVertical: 20,
     width: '90%',
     borderRadius: 60,

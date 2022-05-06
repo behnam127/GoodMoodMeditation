@@ -42,7 +42,7 @@ export default class SetLang extends Component {
         <Text
           style={{
             fontSize: 20,
-            backgroundColor: 'orange',
+            backgroundColor: '#cc80ff',
             width: '100%',
             textAlign: 'center',
             padding: 10,
@@ -78,7 +78,8 @@ export default class SetLang extends Component {
           <TouchableOpacity
             style={{
               marginTop: 20,
-              backgroundColor: this.state.lang == item.key ? '#0099ff' : '#ccc',
+              backgroundColor:
+                this.state.lang == item.key ? '#b84dff' : '#e6e6ff',
               padding: 10,
               width: '80%',
               alignItems: 'center',
@@ -114,7 +115,7 @@ export default class SetLang extends Component {
       } else {
         this.setLang(lang);
         Lang.setLanguage(lang);
-        Actions.Home();
+        Actions.getName();
       }
     } catch (error) {
       console.log(error);
