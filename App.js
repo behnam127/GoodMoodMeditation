@@ -197,7 +197,7 @@ export default class App extends Component {
   render(props) {
     return (
       <Provider store={store}>
-        <AllPagesHeader />
+        <AllPagesHeader name={this.props.name} />
         <Router
           {...this.props}
           navigationBarStyle={styles.navBar}

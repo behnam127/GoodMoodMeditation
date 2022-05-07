@@ -34,15 +34,15 @@ export default class Register extends Component {
     };
   }
 
-  storeEmail = async (EmailValue) => {
-    try {
-      const EmailValue = this.state.email;
-      await AsyncStorage.setItem('@EMAIL_ID', EmailValue);
-      console.log('Email-Value is: ' + EmailValue);
-    } catch (er) {
-      console.log(er);
-    }
-  };
+  // storeEmail = async (EmailValue) => {
+  //   try {
+  //     const EmailValue = this.state.email;
+  //     await AsyncStorage.setItem('@EMAIL_ID', EmailValue);
+  //     console.log('Email-Value is: ' + EmailValue);
+  //   } catch (er) {
+  //     console.log(er);
+  //   }
+  // };
 
   renderInputs = () => {
     return (

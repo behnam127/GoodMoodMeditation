@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import React, {Component, useState} from 'react';
 import {Actions} from 'react-native-router-flux';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {connect, Provider} from 'react-redux';
+
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -24,7 +26,7 @@ const defaultPickerOptions = {
   width: DEFAULT_WITH,
 };
 
-export default class getName extends Component {
+class getName extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -114,6 +116,7 @@ export default class getName extends Component {
   }
 
   render() {
+    const {name, onChangeName} = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.imageContainer}>
@@ -136,11 +139,14 @@ export default class getName extends Component {
           value={this.state.name}
           onChangeText={(name) => {
             this.setState({name});
-            this.storeData();
           }}
         />
         <TouchableOpacity
-          onPress={() => Actions.Register()}
+          onPress={() => {
+          //  Actions.Register()
+          this.storeData();
+          this.props.onChangeName();
+          }}
           style={styles.nextBtn}>
           <Text style={styles.nextText}>Next</Text>
         </TouchableOpacity>
@@ -148,19 +154,46 @@ export default class getName extends Component {
     );
   }
 
-  async storeData(image, name) {
+  async storeData() {
     try {
-      const image = this.state.image;
       const name = this.state.name;
-      await AsyncStorage.setItem('@IMAGE', image);
-      console.log('IMAGE-Value is: ' + image);
       await AsyncStorage.setItem('@NAME', name);
-      console.log('NAME-Value is: ' + name);
+      console.log('storing @NAME in getName page: ' + name);
+      this.getData();
     } catch (er) {
       console.log(er);
     }
   }
+
+  async getData() {
+    try {
+      const name = await AsyncStorage.getItem('@NAME');
+      this.setState({name: name});
+      console.log('geting @NAME data in getName page ');
+      return name != null ? JSON.parse(name) : null;
+      
+    } catch (e) {
+      // error reading value
+    }
+  }
+
+
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+    onChangeName: () => dispatch({type: 'CHANGE_NAME'}),
+  };
+}
+
+function mapStateToProps(state) {
+  return {
+    name: state.name,
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(getName);
+
 
 const styles = StyleSheet.create({
   container: {

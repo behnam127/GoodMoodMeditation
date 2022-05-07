@@ -7,6 +7,8 @@ import {
   Image,
 } from 'react-native';
 import React, {Component} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -16,18 +18,23 @@ export default class AllPagesHeader extends Component {
     super(props);
     this.state = {
       image: require('../../assets/image/home.png'),
+      name:'',
     };
   }
 
   async getData() {
     try {
-      const image = await AsyncStorage.getItem('@IMAGE');
-      this.setState({image: image});
-      return image != null ? JSON.parse(image) : null;
+      const name = await AsyncStorage.getItem('@NAME');
+      this.setState({name: name});
+      console.log('geting @NAME data in allPagesHeader page');
+      return name != null ? JSON.parse(name) : null;
+      
     } catch (e) {
       // error reading value
     }
   }
+
+
   componentDidMount() {
     this.getData();
   }
@@ -45,7 +52,7 @@ export default class AllPagesHeader extends Component {
         {this.state.image
           ? this.renderHeader(this.state.image)
           : this.state.image}
-        <Text>AllPagesHeader</Text>
+        <Text>{this.state.name}</Text>
       </View>
     );
   }
